@@ -58,6 +58,17 @@
             </div>
         </section>
 
+        {% if error_message %}
+        <div class="error-container" style="max-width: 600px; margin: 2rem auto; padding: 15px; background: rgba(255, 0, 60, 0.1); border: 1px solid #ff003c; border-radius: 8px; text-align: center;">
+            <p style="color: #ff003c; font-weight: bold; text-shadow: 0 0 5px #ff003c;">
+                ⚠️ ERROR: {{ error_message }}
+            </p>
+            <p style="color: #aaa; font-size: 0.9rem; margin-top: 5px;">
+                Please check your data format (e.g., 0,0 then 0.5,12) and ensure columns are numeric.
+            </p>
+        </div>
+        {% endif %}
+
         {% if results %}
         <section class="results-section">
             <h2 style="text-align: center; color: white; margin-top: 2rem; margin-bottom: 1.5rem;">Integration Results (Distance in meters)</h2>
