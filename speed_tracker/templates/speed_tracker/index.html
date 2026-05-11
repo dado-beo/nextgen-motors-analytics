@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NextGen Electric Motors - Speed Track</title>
     
-    <!-- Favicon emoji for rappresenting the site -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>"> 
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
@@ -15,7 +14,6 @@
     
     <link rel="stylesheet" href="{% static 'speed_tracker/style.css' %}">
     
-    <!-- Additional styles specific to the results section and charts, to enhance the visual presentation of the integration results and the charts displaying the speed data. -->
     <style>
         .results-grid { display: flex; gap: 1.5rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap; }
         .result-card { background: rgba(13, 17, 23, 0.8); border: 1px solid #30363d; border-radius: 12px; padding: 20px; text-align: center; flex: 1; min-width: 200px; }
@@ -31,7 +29,7 @@
             <p>Determine the exact distance (meters) covered in a 0-100 km/h test</p>
         </header>
 
-        <section class="input-section"> <!-- This section contains the two options for inputting data: uploading a CSV file or entering data manually. Each option is styled as a card for better visual separation and user experience. -->
+        <section class="input-section">
             <div class="input-card">
                 <h2>Option 1: Upload CSV</h2>
                 <form id="uploadForm" method="POST" enctype="multipart/form-data" novalidate>
@@ -85,18 +83,18 @@
 
         <section class="charts-container" style="display: flex; flex-direction: column; gap: 2rem;">
             <div class="chart-card" style="background: rgba(13, 17, 23, 0.8); border: 1px solid #30363d; border-radius: 12px; padding: 20px;">
-                <h3 style="text-align: center; color: var(--accent-cyan); margin-bottom: 1rem;">Ultimo Inserimento (Current Run)</h3>
+                <h3 style="text-align: center; color: var(--accent-cyan); margin-bottom: 1rem;">Latest Run Analysis</h3>
                 <canvas id="currentChart"></canvas>
             </div>
 
             <div class="chart-card" style="background: rgba(13, 17, 23, 0.8); border: 1px solid #30363d; border-radius: 12px; padding: 20px;">
-                <h3 style="text-align: center; color: #39ff14; margin-bottom: 1rem;">Confronto Storico Dati (All Runs)</h3>
+                <h3 style="text-align: center; color: #39ff14; margin-bottom: 1rem;">Historical Data Comparison</h3>
                 <canvas id="historyChart"></canvas>
             </div>
         </section>
         
         <div style="text-align: center; margin-top: 2rem;">
-            <a href="?clear=true" class="btn-glow" style="text-decoration: none; display: inline-block;">🗑️ Clear Memory & Reset</a>
+            <a href="?clear=true" class="btn-glow" style="text-decoration: none; display: inline-block;">Clear Memory & Reset</a>
         </div>
         {% endif %}
     </div>
@@ -117,7 +115,7 @@
             data: {
                 labels: currentData.labels,
                 datasets: [{
-                    label: 'Speed (km/h) - Ultimo Input',
+                    label: 'Speed (km/h) - Latest Input',
                     data: currentData.values,
                     borderColor: '#00f3ff',
                     backgroundColor: gradientCurrent,
@@ -125,10 +123,19 @@
                     pointBackgroundColor: '#39ff14', pointRadius: 4
                 }]
             },
-            options: { responsive: true, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#aaa' } }, y: { ticks: { color: '#aaa' } } } }
+            options: { 
+                responsive: true, 
+                plugins: { 
+                    legend: { labels: { color: '#fff' } } 
+                }, 
+                scales: { 
+                    x: { title: { display: true, text: 'Time (s)', color: '#fff' }, ticks: { color: '#aaa' } }, 
+                    y: { title: { display: true, text: 'Speed (km/h)', color: '#fff' }, ticks: { color: '#aaa' } } 
+                } 
+            }
         });
 
-        // Graph for Historical Comparison
+        // Historical Comparison Chart
         const ctxHistory = document.getElementById('historyChart').getContext('2d');
         const neonColors = ['#ff00ff', '#39ff14', '#ffff00', '#ff003c', '#00f3ff'];
         
@@ -153,13 +160,22 @@
                 labels: longestLabels,
                 datasets: historyDatasets
             },
-            options: { responsive: true, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#aaa' } }, y: { ticks: { color: '#aaa' } } } }
+            options: { 
+                responsive: true, 
+                plugins: { 
+                    legend: { labels: { color: '#fff' } } 
+                }, 
+                scales: { 
+                    x: { title: { display: true, text: 'Time (s)', color: '#fff' }, ticks: { color: '#aaa' } }, 
+                    y: { title: { display: true, text: 'Speed (km/h)', color: '#fff' }, ticks: { color: '#aaa' } } 
+                } 
+            }
         });
     </script>
     {% endif %}
 
     <script>
-        // Manages the file input interaction for the CSV upload form, providing immediate feedback to the user about the selected file and ensuring that the form cannot be submitted without a file being chosen. It also handles validation for both forms and prevents accidental resubmission of data when refreshing the page.
+        // File input label management
         const fileInput = document.getElementById('csv_file');
         const fileChosen = document.getElementById('file-chosen');
         
@@ -174,7 +190,7 @@
             });
         }
 
-        // Form validation for the CSV upload form, ensuring that the user cannot submit the form without selecting a file. If the user attempts to submit without a file, an error message is displayed prompting them to select a file before proceeding.
+        // Validation for CSV upload
         const uploadForm = document.getElementById('uploadForm');
         if(uploadForm) {
             uploadForm.addEventListener('submit', function(e) {
@@ -185,7 +201,7 @@
             });
         }
 
-        // Form validation for the manual data entry form, ensuring that the user cannot submit the form without entering any data. If the user attempts to submit without entering data, an error message is displayed prompting them to provide input before proceeding.
+        // Validation for Manual entry
         const manualForm = document.getElementById('manualForm');
         if(manualForm) {
             manualForm.addEventListener('submit', function(e) {
@@ -197,7 +213,7 @@
             });
         }
 
-        // Prevents form resubmission when the user refreshes the page after submitting data. This is achieved by using the History API to replace the current state, ensuring that the form data is not resubmitted and avoiding duplicate entries or unintended consequences from accidental refreshes.
+        // Prevent resubmission on refresh
         if (window.history.replaceState) {
             window.history.replaceState(null, null, window.location.href);
         }
@@ -207,9 +223,9 @@
         &copy; 2026 MEMBERS ONLY
         <div class="creators-tooltip">
             Developed by: <br> Beolchi Davide <br>
-                          Maselli Morgan <br>
-                          Dell'Aquila Francesco <br>
-                          Nicastro Stefano <br> 
+                         Maselli Morgan <br>
+                         Dell'Aquila Francesco <br>
+                         Nicastro Stefano <br> 
         </div>
     </div>
 </body>
